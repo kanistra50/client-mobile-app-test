@@ -8,7 +8,51 @@
 </ion-header>
 
 <ion-content *ngIf="item" padding>
-  <form [formGroup]="edit_item_form" (ngSubmit)="updateItem(edit_item_form.value)">
+
+  <div class="item">
+    <div class="item-inner">
+      <span class="item-title">Getting Geo Position
+        <span class="indicator" [ngClass]="{light: signalPositionEvent, error: signalPositionError}"></span>
+      </span>
+      <span class="radio" (click)="toggleP()">
+        <span>Pro Scan</span><span class="radio-button" [ngClass]="{check: hiAccuracyP}"></span>
+      </span>
+
+    </div>
+    <ion-button expand="block" [ngClass]="{disabled: signalPositionEvent}" (click)="getLocation()">Get Position</ion-button>
+    <div *ngIf="pX"><span>latitude: {{ pX }}</span></div>
+    <div *ngIf="pY"><span>longitude: {{ pY }}</span></div>
+    <div *ngIf="accuracy"><span>Accuracy: {{ accuracy }}</span></div>
+    <span *ngIf="timeSpent">(time spent: {{ timeSpent }})</span>
+    <div *ngIf="errorMessageP || errorCodeP"><span class="info-error">Error: {{ errorCodeP }} {{ errorMessageP }}</span></div>
+  </div>
+
+  <div class="item">
+    <div class="item-inner">
+      <span class="item-title">Watcher. Motion detected</span>
+      <span class="indicator" [ngClass]="{light: signalWatcherEvent, error: signalWatcherError}"></span>
+      <span class="radio" [ngClass]="{disabled: watchPositionProcess}" (click)="toggleW()">
+        <span>Pro Scan</span><span class="radio-button" [ngClass]="{check: hiAccuracyW}"></span>
+      </span>
+
+    </div>
+    <div class="buttons">
+      <ion-button *ngIf="!watchPositionProcess" expand="block" (click)="startWatcher()" >Start Watcher</ion-button>
+      <ion-button *ngIf="watchId && watchPositionProcess" expand="block" (click)="clearWatcher()">Stop Watcher: ID {{ watchId }}</ion-button>
+    </div>
+    <div class="counter">
+      <span class="counter-item">Success: <span class="counter-succed"> {{ scanSuccedCounter }}</span></span>
+      <span class="counter">Error: <span class="counter-error">{{ scanErrorCounter }}</span></span>
+    </div>
+    <div *ngIf="wX"><span>latitude: {{ wX }}</span></div>
+    <div *ngIf="wY"><span>longitude: {{ wY }}</span></div>
+    <div *ngIf="accuracyW"><span>Accuracy: {{ accuracyW }}</span></div>
+    <span *ngIf="watcherPeriod">(Last scan: {{ watcherPeriod }})</span>
+    <div *ngIf="errorMessageW || errorCodeW"><span class="info-error">Error: {{ errorCodeW }} {{ errorMessageW }}</span></div>
+
+  </div>
+
+  <form *ngIf="false" [formGroup]="edit_item_form" (ngSubmit)="updateItem(edit_item_form.value)">
     <ion-item>
       <ion-label color="primary" position="floating">Title</ion-label>
       <ion-input type="text" formControlName="title" required></ion-input>

@@ -12,7 +12,10 @@ npm install
 ```
 ionic serve
 ```
-### Tutorial
+### Geolocation plugin
+```
+ionic cordova plugin add cordova-plugin-geolocation
 
-- [Tutorial](https://ionicthemes.com/tutorials/about/ionic-4-vs-ionic-3)
-
+npm install @ionic-native/geolocation
+```
+[Tutorial link](https://ionicframework.com/docs/native/geolocation)

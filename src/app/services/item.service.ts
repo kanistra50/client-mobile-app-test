@@ -8,28 +8,8 @@ export class ItemService {
   items: Array<any> = [
     {
       'id': '1',
-      'title': 'Example 1',
+      'title': 'Your location',
       'description': 'description 1'
-    },
-    {
-      'id': '2',
-      'title': 'Example 2',
-      'description': 'description 2'
-    },
-    {
-      'id': '3',
-      'title': 'Example 3',
-      'description': 'description 3'
-    },
-    {
-      'id': '4',
-      'title': 'Example 4',
-      'description': 'description 4'
-    },
-    {
-      'id': '5',
-      'title': 'Need a more complex app?',
-      'description': 'Check the Ionic 4 Full Starter App.'
     }
   ]
 
