@@ -12,7 +12,6 @@ export class HomePage implements OnInit {
   items: Array<any>;
 
   constructor(
-    private router: Router,
     public itemService: ItemService
   ){}
 

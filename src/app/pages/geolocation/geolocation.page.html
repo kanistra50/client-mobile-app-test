@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Geo Location</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <div class="item">
+    <div class="item-inner">
+      <span class="item-title">
+        <span>Single Scan</span>
+        <span class="indicator" [ngClass]="{light: signalPositionEvent, error: signalPositionError}"></span>
+      </span>
+      <span class="radio" (click)="toggleP()">
+        <span>Pro</span><span class="radio-button" [ngClass]="{check: hiAccuracyP}"></span>
+      </span>
+
+    </div>
+    <ion-button expand="block" [ngClass]="{disabled: signalPositionEvent}" (click)="getLocation()">Get Position</ion-button>
+    <div *ngIf="pX"><span>lat: {{ pX }}</span></div>
+    <div *ngIf="pY"><span>lon: {{ pY }}</span></div>
+    <div *ngIf="accuracy"><span>Radius: {{ accuracy }}</span></div>
+    <span *ngIf="timeSpent">(scan time: {{ timeSpent }})</span>
+    <div *ngIf="errorMessageP || errorCodeP"><span class="info-error">Error: {{ errorCodeP }} {{ errorMessageP }}</span></div>
+  </div>
+
+  <div class="item">
+    <div class="item-inner">
+      <span class="item-title">
+        <span>Multi scan</span>
+        <span class="indicator" [ngClass]="{light: signalWatcherEvent, error: signalWatcherError}"></span>
+      </span>
+      <span class="radio" [ngClass]="{disabled: watchPositionProcess}" (click)="toggleW()">
+        <span>Pro</span><span class="radio-button" [ngClass]="{check: hiAccuracyW}"></span>
+      </span>
+
+    </div>
+    <div class="buttons">
+      <ion-button *ngIf="!watchPositionProcess" expand="block" (click)="startWatcher()">Start Watcher</ion-button>
+      <ion-button *ngIf="watchId && watchPositionProcess" expand="block" (click)="clearWatcher()">Stop Watcher</ion-button>
+    </div>
+    <div class="counter">
+      <span class="counter-item">Success: <span class="counter-succed"> {{ scanSuccedCounter }}</span></span>
+      <span class="counter">Error: <span class="counter-error">{{ scanErrorCounter }}</span></span>
+    </div>
+    <div *ngIf="wX"><span>lat: {{ wX }}</span></div>
+    <div *ngIf="wY"><span>lon: {{ wY }}</span></div>
+    <div *ngIf="accuracyW"><span>Radius: {{ accuracyW }}</span></div>
+    <span *ngIf="watcherPeriod">(Scan period: {{ watcherPeriod }})</span>
+    <div *ngIf="errorMessageW || errorCodeW"><span class="info-error">Error: {{ errorCodeW }} {{ errorMessageW }}</span></div>
+
+  </div>
+
+</ion-content>

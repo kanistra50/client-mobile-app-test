@@ -5,12 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { UpdateItemPage } from './update-item.page';
+import { GeolocationPage } from './geolocation.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: UpdateItemPage
+    component: GeolocationPage
   }
 ];
 
@@ -22,6 +22,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [UpdateItemPage]
+  declarations: [GeolocationPage]
 })
-export class UpdateItemPageModule {}
+export class GeolocationModule {}

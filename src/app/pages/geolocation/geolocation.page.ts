@@ -1,25 +1,27 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ItemService} from '../../services/item.service';
 import {Geolocation} from '@ionic-native/geolocation/ngx'
-import {finalize, takeUntil} from "rxjs/operators";
+import {finalize, take, takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
 import {PositionError} from "@ionic-native/geolocation";
 
+const SCAN_EVENT = {
+    SUCCESS: 'SUCCESS',
+    ERROR: 'ERROR'
+}
+
 @Component({
-    selector: 'app-update-item',
-    templateUrl: './update-item.page.html',
-    styleUrls: ['./update-item.page.scss'],
+    selector: 'tr-geolocation',
+    templateUrl: './geolocation.page.html',
+    styleUrls: ['./geolocation.page.scss'],
 })
-export class UpdateItemPage implements OnInit {
+export class GeolocationPage implements OnDestroy {
 // eslint-disable-line no-undef
     item: any;
-    edit_item_form: FormGroup;
-
     pX: any; pY: any;
     wX: any; wY: any;
-    accuracy: any;
+    accuracy: string;
     hiAccuracyP = false;
     hiAccuracyW = false;
     accuracyW: any;
@@ -41,33 +43,16 @@ export class UpdateItemPage implements OnInit {
     errorCodeW: number;
     scanSuccedCounter = 0;
     scanErrorCounter = 0;
+    scanQuantaty: number;
 
     private readonly _destroy$ = new Subject<void>();
 
     constructor(
         private router: Router,
         private route: ActivatedRoute,
-        public formBuilder: FormBuilder,
         private itemService: ItemService,
         private _geolocation: Geolocation,
     ) {
-    }
-
-    ngOnInit() {
-        this.route.params.subscribe(
-            data => {
-                this.item = this.itemService.getItemById(data.id)[0];
-                //if item is undefined, go back to home
-                if (!this.item) {
-                    this.goBack();
-                } else {
-                    this.edit_item_form = this.formBuilder.group({
-                        title: new FormControl(this.item.title, Validators.required),
-                        description: new FormControl(this.item.description, Validators.required)
-                    });
-                }
-            }
-        )
     }
 
     getLocation() {
@@ -81,14 +66,39 @@ export class UpdateItemPage implements OnInit {
     startWatcher() {
         if (this.watchPositionProcess) {
             return;
-        }
-        this.signalWatcherEvent = true
-        setTimeout(() => this.signalWatcherEvent = false, 150);
+        };
+        this._blinkWatcher(SCAN_EVENT.SUCCESS, 150);
         this._startWatcher();
     }
 
+    private _blinkSingleScan(eventType, time) {
+        switch(eventType) {
+            case SCAN_EVENT.SUCCESS: {
+                this.signalPositionEvent = true
+                setTimeout(() => this.signalPositionEvent = false, time);
+            }; break;
+            case SCAN_EVENT.ERROR: {
+                this.signalPositionError = true
+                setTimeout(() => this.signalWatcherError = false, time);
+            }
+        }
+    }
+
+    private _blinkWatcher(eventType, time) {
+        switch(eventType) {
+            case SCAN_EVENT.SUCCESS: {
+                this.signalWatcherEvent = true
+                setTimeout(() => this.signalWatcherEvent = false, time);
+            }; break;
+            case SCAN_EVENT.ERROR: {
+                this.signalWatcherError = true
+                setTimeout(() => this.signalWatcherError = false, time);
+            }
+        }
+    }
+
     clearWatcher() {
-        this.watchPositionProcess = false;
+        this.scanQuantaty = 1;
         this.watchId = null;
         this.wX = '';
         this.wY = '';
@@ -97,37 +107,15 @@ export class UpdateItemPage implements OnInit {
         this._destroy$.next();
         this._destroy$.complete();
     }
-
     toggleP() {
         this.hiAccuracyP = !this.hiAccuracyP;
     }
-
     toggleW() {
         if(this.watchPositionProcess) {
             return;
         }
         this.hiAccuracyW = !this.hiAccuracyW;
     }
-
-    goBack() {
-        this.router.navigate(['/home']);
-    }
-
-    updateItem(value) {
-        let newValues = {
-            id: this.item.id,
-            title: value.title,
-            description: value.description
-        };
-        this.itemService.updateItem(newValues);
-        this.goBack();
-    }
-
-    ngOnDestroy() {
-        this._destroy$.next();
-        this._destroy$.complete();
-    }
-
     private _getLocation() {
         const options = {
             enableHighAccuracy: this.hiAccuracyP,
@@ -144,7 +132,6 @@ export class UpdateItemPage implements OnInit {
                 this.getPositionProcess = false;
             });
     }
-
     private _onSuccess(position) {
         this.signalPositionEvent = true;
         setTimeout(() => this.signalPositionEvent = false, 500);
@@ -154,7 +141,7 @@ export class UpdateItemPage implements OnInit {
         if (crd) {
             this.pX = crd.latitude;
             this.pY = crd.longitude;
-            this.accuracy = crd.accuracy;
+            this.accuracy = `${crd.accuracy.toFixed()}m`;
         } else {
             this.pX = '';
             this.pY = '';
@@ -172,7 +159,6 @@ export class UpdateItemPage implements OnInit {
         //     'Speed: '             + position.coords.speed             + '\n' +
         //     'Timestamp: '         + position.timestamp                + '\n');
     };
-
     private _onError(err: PositionError) {
         this.signalPositionError = true;
         this.pX = '';
@@ -190,10 +176,7 @@ export class UpdateItemPage implements OnInit {
 
         this.error = err;
         console.warn(`ERROR(${err.code}): ${err.message}`);
-        // alert('code: ' + err.code + '\n' +
-        //     'message: ' + err.message + '\n');
     }
-
     private _startWatcher() {
         const options = {
             enableHighAccuracy: this.hiAccuracyW,
@@ -201,13 +184,14 @@ export class UpdateItemPage implements OnInit {
             maximumAge: 0
         };
         this.watchPositionProcess = true;
-
+        this.scanQuantaty = 10;
+        this.scanErrorCounter = 0;
+        this.scanSuccedCounter = 0;
         this._geolocation.watchPosition(options).pipe(
+            take(this.scanQuantaty),
             takeUntil(this._destroy$),
             finalize(() => {
                 console.log('Finalyze Watcher');
-                this.scanErrorCounter = 0;
-                this.scanSuccedCounter = 0;
                 this.watchPositionProcess = false
             })
         ).subscribe(
@@ -227,7 +211,7 @@ export class UpdateItemPage implements OnInit {
             if (crd) {
                 this.wX = crd.latitude;
                 this.wY = crd.longitude;
-                this.accuracyW = crd.accuracy;
+                this.accuracyW =`${crd.accuracy.toFixed()}m`;
                 this.watchId = position.timestamp;
             } else {
                 this.wX = '';
@@ -246,7 +230,7 @@ export class UpdateItemPage implements OnInit {
 
     }
 
-    private _onWatcherError(err: PositionError) {
+    private _onWatcherError(err: PositionError): void {
         this.scanErrorCounter+=1;
         this.wX = '';
         this.wY = '';
@@ -254,14 +238,17 @@ export class UpdateItemPage implements OnInit {
         this.watcherPeriod = null;
         this.errorMessageW = err.message;
         this.errorCodeW = err.code;
+        this.error = err;
+        console.warn(`Watcher ERROR(${err.code}): ${err.message}`);
         setTimeout(() => {
             this.errorMessageW = '';
             this.errorCodeW = 0;
         }, 2000);
         this.signalWatcherError = true;
         setTimeout(() => this.signalWatcherError = false, 500);
-
-        this.error = err;
-        console.warn(`Watcher ERROR(${err.code}): ${err.message}`);
+    }
+    ngOnDestroy() {
+        this._destroy$.next();
+        this._destroy$.complete();
     }
 }
