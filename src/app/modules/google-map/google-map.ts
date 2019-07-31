@@ -2,7 +2,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
     GoogleMap,
     GoogleMaps,
-    GoogleMapsAnimation,
     GoogleMapsEvent, LatLng,
     Marker,
     MyLocation
@@ -34,9 +33,7 @@ export class TrGoogleMap implements OnInit, OnDestroy {
         this.mapId = this.idGeneratorService.getItems();
     }
 
-        // ngOnInit() {
-        //     this.loadMap();
-        // }
+
     async ngOnInit() {
         // Since ngOnInit() is executed before `deviceready` event,
         // you have to wait the event.
@@ -78,63 +75,73 @@ export class TrGoogleMap implements OnInit, OnDestroy {
             // Move the map camera to the location with animation
             this.map.animateCamera({
                 target: location.latLng,
-                zoom: 17,
+                zoom: 20,
                 tilt: 30
             });
         }) .catch(err => {
             this.loading.dismiss();
             this.showToast(err.error_message);
         });
+
         this.map.clear();
+    }
+
+
+    setMarker(point: LatLng) {
+        // Move the map camera to the location with animation
+        this.map.animateCamera({
+            target: point,
+            zoom: 20,
+            tilt: 30
+        });
+
+
+        let marker: Marker = this.map.addMarkerSync({
+            position: point,
+            flat: true,
+            label: 'A',
+            icon: '#009933',
+            //         // path: this.map.SymbolPath.CIRCLE,
+            //         scale: 24,
+            //         strokeWeight: 2,
+            //         fillColor: '#009933',
+            //         fillOpacity: 0.001,
+            //         // anchor: new google.maps.Point(0, 0)
+            //     }
+        });
+        //
+        // add a marker
+        // let marker: Marker = this.map.addMarkerSync({
+        //     title: '',
+        //     snippet: '',
+        //     position: point,
+        //     animation: GoogleMapsAnimation.BOUNCE
+        // });
+
+        // show the infoWindow
+        marker.showInfoWindow();
+
+        // If clicked it, display the alert
+        marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+            this.showToast('clicked!');
+        });
     }
 
     async showToast(message: string) {
         let toast = await this.toastCtrl.create({
             message: message,
-            duration: 2000,
+            duration: 500,
             position: 'middle'
         });
 
         toast.present();
     }
 
-    async setMarker(point: LatLng) {
-        this.loading = await this.loadingCtrl.create({
-            message: 'Please wait...'
-        });
-
-        await this.loading.present();
-
-        // // Get the location of you
-        // this.map.getMyLocation().then((location: MyLocation) => {
-            this.loading.dismiss();
-
-            // Move the map camera to the location with animation
-            this.map.animateCamera({
-                target: point,
-                zoom: 17,
-                tilt: 30
-            });
-
-            // add a marker
-            let marker: Marker = this.map.addMarkerSync({
-                title: '',
-                snippet: '',
-                position: point,
-                animation: GoogleMapsAnimation.BOUNCE
-            });
-
-            // show the infoWindow
-            marker.showInfoWindow();
-
-            // If clicked it, display the alert
-            marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-                this.showToast('clicked!');
-            });
-
-    }
-
     ngOnDestroy(): void {
+        if (this.loading) {
+            this.loading.dismiss();
+        };
+        this.map.clear();
         this._destroy$.next();
         this._destroy$.complete();
     }

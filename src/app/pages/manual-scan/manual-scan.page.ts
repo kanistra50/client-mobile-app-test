@@ -1,13 +1,6 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {
-    GoogleMap,
-    GoogleMaps,
-    GoogleMapsAnimation,
-    GoogleMapsEvent,
-    Marker,
-    MyLocation
-} from "@ionic-native/google-maps";
-import {LoadingController, Platform, ToastController} from "@ionic/angular";
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {GoogleMap,} from "@ionic-native/google-maps";
+import {Platform,} from "@ionic/angular";
 import {ActivatedRoute, Router} from "@angular/router";
 import {SCAN_EVENT} from "../../constants/scan-event.constants";
 import {Geolocation} from '@ionic-native/geolocation/ngx'
@@ -20,12 +13,10 @@ import {MarkerTransferService} from "../../services/marker-transferr.service";
     templateUrl: './manual-scan.page.html',
     styleUrls: ['./manual-scan.page.scss'],
 })
-export class ManualScanPage implements OnInit {
+export class ManualScanPage implements OnInit, OnDestroy {
 
-    private myPoints = [];
     map: GoogleMap;
     loading: any;
-
 
     // eslint-disable-line no-undef
     item: any;
@@ -42,13 +33,9 @@ export class ManualScanPage implements OnInit {
     errorMessageP: string;
     errorCodeP: number;
 
-    @ViewChild('TrGoogleMap') private googleMap: TrGoogleMap;
 
     constructor(
-        public loadingCtrl: LoadingController,
-        public toastCtrl: ToastController,
         private platform: Platform,
-
         private router: Router,
         private route: ActivatedRoute,
         private _geolocation: Geolocation,
@@ -158,6 +145,7 @@ export class ManualScanPage implements OnInit {
         console.warn(`ERROR(${err.code}): ${err.message}`);
     }
 
-
-
+    ngOnDestroy() {
+        this.markerTransferService.setMarker(null);
+    }
 }
