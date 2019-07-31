@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Google Map</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <tr-item-wrap>
+    <div class="item-inner">
+      <span class="item-title">
+        <span>Single Scan</span>
+        <span class="indicator" [ngClass]="{light: signalPositionEvent, error: signalPositionError}"></span>
+      </span>
+      <span class="radio" (click)="toggleP()">
+        <span>Pro</span><span class="radio-button" [ngClass]="{check: hiAccuracyP}"></span>
+      </span>
+
+    </div>
+    <ion-button expand="block" [ngClass]="{disabled: signalPositionEvent}" (click)="getLocation()">Get Position</ion-button>
+    <div *ngIf="pX"><span>lat: {{ pX }}</span></div>
+    <div *ngIf="pY"><span>lon: {{ pY }}</span></div>
+    <div *ngIf="accuracy"><span>Radius: {{ accuracy }}</span></div>
+    <span *ngIf="timeSpent">(scan time: {{ timeSpent }})</span>
+    <div *ngIf="errorMessageP || errorCodeP"><span class="info-error">Error: {{ errorCodeP }} {{ errorMessageP }}</span></div>
+  </tr-item-wrap>
+
+  <tr-item-wrap>
+    <tr-google-map></tr-google-map>
+  </tr-item-wrap>
+
+
+</ion-content>

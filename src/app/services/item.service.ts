@@ -8,9 +8,19 @@ export class ItemService {
   items: Array<any> = [
     {
       'id': '1',
-      'title': 'Geolocation',
-      'description': 'Scan single geo position and activate watcher for multi scanning'
-    }
+      'title': 'Manual Scan',
+      'routerLink': '/manual-scan',
+      'description': ''
+    },{
+      'id': '2',
+      'title': 'Auto Scan',
+      'routerLink': '/auto-scan',
+      'description': ''
+    },
+
+    //   'description': 'Scan current position'
+    //   'description': 'Visualize navigation points'
+
   ]
 
   constructor() { }

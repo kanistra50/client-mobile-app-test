@@ -1,15 +1,11 @@
 import {Component, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ItemService} from '../../services/item.service';
-import {Geolocation} from '@ionic-native/geolocation/ngx'
 import {finalize, take, takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
+import {Geolocation} from '@ionic-native/geolocation/ngx'
 import {PositionError} from "@ionic-native/geolocation";
-
-const SCAN_EVENT = {
-    SUCCESS: 'SUCCESS',
-    ERROR: 'ERROR'
-}
+import {SCAN_EVENT} from "../../constants/scan-event.constants";
 
 @Component({
     selector: 'tr-geolocation',

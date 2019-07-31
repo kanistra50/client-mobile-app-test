@@ -11,9 +11,10 @@
 
 <ion-content padding>
   <ion-list>
-    <ion-item *ngFor="let item of items" [routerLink]="['/geolocation']">
+    <ion-item *ngFor="let item of items" [routerLink]="[item.routerLink]">
       <ion-label>
         {{ item.title }}
+        <span class="item-description"> {{ item.description }}</span>
       </ion-label>
     </ion-item>
   </ion-list>

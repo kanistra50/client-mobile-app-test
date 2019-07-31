@@ -1,0 +1,16 @@
+.item-description {
+  font-size: 12px;
+  color: dimgray;
+}
+app-home::ng-deep {
+  ion-content::ng-deep ion-list::ng-deep ion-item::ng-deep a.item-native::ng-deep {
+    padding-left: 0 !important;
+  }
+
+}
+ion-item::ng-deep {
+  #shadow-root::ng-deep  {
+
+  }
+}
+
