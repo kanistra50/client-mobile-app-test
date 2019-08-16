@@ -1,0 +1,20 @@
+.blinker {
+  $dimension: 6px;
+
+  width: $dimension;
+  height: $dimension;
+  border-radius: $dimension / 2;
+  display: inline-block;
+  margin: $dimension/3 $dimension;
+
+  background: #d7d8da;
+
+  &.light {
+    background: #669900;
+    box-shadow: 1px 2px 8px rgba(102, 153, 0, 1);
+  }
+  &.error {
+    background: #cc3300;
+    box-shadow: 1px 2px 8px rgba(204, 51, 0, 1);
+  }
+}

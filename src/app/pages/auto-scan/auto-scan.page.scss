@@ -26,25 +26,6 @@
   width: 100%;
 }
 
-.indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  display: inline-block;
-  margin: 0 8px;
-
-  background: #d7d8da;
-
-  &.light {
-    background: #669900;
-    box-shadow: 1px 2px 8px rgba(102, 153, 0, 1);
-  }
-  &.error {
-    background: #cc3300;
-    box-shadow: 1px 2px 8px rgba(204, 51, 0, 1);
-  }
-}
-
 .counter {
   display: flex;
   justify-content: space-around; // For Old Android
@@ -69,4 +50,28 @@
   font-size: 14px;
   font-weight: bold;
   color: #cc3300;
+}
+
+.radio {
+  display: flex;
+  margin-left: auto;
+  height: 32px;
+  align-items: center;
+
+  &-button {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 0 8px;
+    border: 2px solid #333300;
+
+    &.check {
+      background: #669900;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.4;
+  }
 }

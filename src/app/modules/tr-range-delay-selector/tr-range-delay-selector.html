@@ -1,0 +1,25 @@
+<div class="item-title">
+    <span>Delay (ms)</span>
+</div>
+
+<ng-container [formGroup]="form">
+    <ion-range
+               class="range-element"
+               (ionChange)="changeRange()"
+               debounce="500"
+               [disabled]="isDisabled"
+               mode="md"
+               color="medium"
+               min="0" max="900"
+               step="75" pin="true"
+               snaps="true"
+               formControlName="rangeValue"
+    >
+        <ion-label slot="start" name="sunny">
+            <img class="img-target_1" src="./assets/images/target-1.svg" alt="">
+        </ion-label>
+        <ion-label slot="end" name="sunny">
+            <img class="img-target_2" src="./assets/images/target-2.svg" alt="">
+        </ion-label>
+    </ion-range>
+</ng-container>

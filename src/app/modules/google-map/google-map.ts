@@ -11,6 +11,7 @@ import {IdGeneratorService} from "../../services/idGenerator.service";
 import {MarkerTransferService} from "../../services/marker-transferr.service";
 import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
+import {from} from "rxjs/internal/observable/from";
 
 @Component({
     selector: 'tr-google-map',
@@ -22,6 +23,7 @@ export class TrGoogleMap implements OnInit, OnDestroy {
     map: GoogleMap;
     loading: any;
     private readonly _destroy$ = new Subject<void>();
+    private readonly _stopRaunner$ = new Subject<void>();
 
     constructor(
         private idGeneratorService: IdGeneratorService,
@@ -38,7 +40,8 @@ export class TrGoogleMap implements OnInit, OnDestroy {
         // Since ngOnInit() is executed before `deviceready` event,
         // you have to wait the event.
         await this.platform.ready();
-        await this.loadMap();
+        await this._createMap();
+        await this._loadMap();
         this.markerTransferService.userName$
             .pipe(takeUntil(this._destroy$))
             .subscribe(
@@ -50,7 +53,7 @@ export class TrGoogleMap implements OnInit, OnDestroy {
             );
     }
 
-    async loadMap() {
+    async _createMap() {
         this.map = GoogleMaps.create('map', {
             camera: {
                 target: {
@@ -61,15 +64,16 @@ export class TrGoogleMap implements OnInit, OnDestroy {
                 tilt: 30
             }
         });
+    }
 
-        this.loading = await this.loadingCtrl.create({
-            message: 'Please wait...'
-        });
-        await this.loading.present();
+    async _loadMap() {
 
+        this._loadingPresent();
+
+        from(this.map.getMyLocation()).pipe().subscribe()
         // Get the location of you
         this.map.getMyLocation().then((location: MyLocation) => {
-            this.loading.dismiss();
+            this._loadingDismiss();
             console.log(JSON.stringify(location, null, 2));
 
             // Move the map camera to the location with animation
@@ -79,13 +83,26 @@ export class TrGoogleMap implements OnInit, OnDestroy {
                 tilt: 30
             });
         }) .catch(err => {
-            this.loading.dismiss();
+            this._loadingDismiss();
             this.showToast(err.error_message);
         });
 
         this.map.clear();
     }
 
+
+    private async _loadingPresent() {
+        this.loading = await this.loadingCtrl.create({
+            message: '...loading'
+        });
+        await this.loading.present();
+        setTimeout(() => this._loadingDismiss(), 5000);
+    }
+
+
+    private _loadingDismiss() {
+        this.loading.dismiss();
+    }
 
     setMarker(point: LatLng) {
         // Move the map camera to the location with animation
@@ -139,7 +156,7 @@ export class TrGoogleMap implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         if (this.loading) {
-            this.loading.dismiss();
+            this._loadingDismiss();
         };
         this.map.clear();
         this._destroy$.next();

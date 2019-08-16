@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Google Map</ion-title>
+    <ion-title>Manual Scan</ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -12,25 +12,42 @@
   <tr-item-wrap>
     <div class="item-inner">
       <span class="item-title">
-        <span>Single Scan</span>
-        <span class="indicator" [ngClass]="{light: signalPositionEvent, error: signalPositionError}"></span>
+        <span>Scan</span><tr-blinker></tr-blinker>
       </span>
-      <span class="radio" (click)="toggleP()">
-        <span>Pro</span><span class="radio-button" [ngClass]="{check: hiAccuracyP}"></span>
+      <span class="radio" (click)="toggle()">
+        <span>Pro</span><span class="radio-button" [ngClass]="{check: hiAccuracy}"></span>
       </span>
-
     </div>
+
+    <tr-range-selector
+            (onChange)="onRangeSelected($event)"
+            [isDisabled]="signalPositionEvent"
+    ></tr-range-selector>
+
+
+    <tr-range-delay-selector
+            (onChange)="onRangeDelaySelected($event)"
+            [isDisabled]="signalPositionEvent"
+    ></tr-range-delay-selector>
+
+
     <ion-button expand="block" [ngClass]="{disabled: signalPositionEvent}" (click)="getLocation()">Get Position</ion-button>
-    <div *ngIf="pX"><span>lat: {{ pX }}</span></div>
-    <div *ngIf="pY"><span>lon: {{ pY }}</span></div>
-    <div *ngIf="accuracy"><span>Radius: {{ accuracy }}</span></div>
+<!--    <div *ngIf="pX"><span>lat: {{ pX }}</span></div>-->
+<!--    <div *ngIf="pY"><span>lon: {{ pY }}</span></div>-->
+    <div *ngIf="points.length">
+      <span>Radius:</span>
+      [<span
+            class="radius-value"
+            [ngClass]="{best: i === bestValueIndex}"
+            *ngFor="let item of points; let i = index"
+    >{{ item.accuracy }}</span>]
+    </div>
     <span *ngIf="timeSpent">(scan time: {{ timeSpent }})</span>
-    <div *ngIf="errorMessageP || errorCodeP"><span class="info-error">Error: {{ errorCodeP }} {{ errorMessageP }}</span></div>
+    <div *ngIf="errorMessage || errorCode"><span class="info-error">Error: {{ errorCode }} {{ errorMessage }}</span></div>
   </tr-item-wrap>
 
   <tr-item-wrap>
     <tr-google-map></tr-google-map>
   </tr-item-wrap>
-
 
 </ion-content>
