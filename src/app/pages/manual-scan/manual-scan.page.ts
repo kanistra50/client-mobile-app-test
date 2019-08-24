@@ -8,9 +8,12 @@ import {MarkerTransferService} from "../../services/marker-transferr.service";
 import {TrBlinker} from "../../shared/tr-blinker/tr-blinker.";
 import {from} from "rxjs/internal/observable/from";
 import {delay, finalize, repeat, take} from "rxjs/operators";
-import {throwError} from "rxjs";
+import {BehaviorSubject, Subject, throwError} from "rxjs";
 import {tap} from "rxjs/internal/operators/tap";
 import {catchError} from "rxjs/internal/operators/catchError";
+import {of} from "rxjs/internal/observable/of";
+import {switchMap} from "rxjs/internal/operators/switchMap";
+import {exhaustMap} from "rxjs/internal/operators/exhaustMap";
 
 interface Position {
     coords: Coordinates;
@@ -95,25 +98,40 @@ export class ManualScanPage implements OnInit, OnDestroy {
         this.points = [];
         const repeatedTimes = this.rangeSelectedValue;
 
-        from(this._geolocation.getCurrentPosition(options)).pipe(
-                take(1),
-                catchError((err) => throwError(err)),
-                tap((position: Position) => {
-                    console.log(position);
-                    this._onSuccess(position);
-                }),
-                delay(this.delayValue),
-                repeat(repeatedTimes),
-                finalize(() => {
-                    console.log("Finalize");
-                    this.getPositionProcess = false;
-                    this.timeSpent = timeBegin ? `${(Date.now() - timeBegin) / 100} ms` : '';
-                    this.bestValueIndex = this._checkBestValue(this.points);
-                    this.setMarker(this.points[this.bestValueIndex]);
-                })
-            ).subscribe({error: (err) => this._onError(err)});
+        const gen$ = new Subject<any>();
 
+        gen$.pipe(
+            delay(this.delayValue),
+            switchMap(() => location$),
+            take(repeatedTimes - 1),
+            finalize(() => {
+                gen$.complete();
+                this.getPositionProcess = false;
+                this.timeSpent = timeBegin ? `${(Date.now() - timeBegin) / 1000} sec` : '';
+                this.bestValueIndex = this._checkBestValue(this.points);
+                this.setMarker(this.points[this.bestValueIndex]);
+            })
+        ).subscribe({error: (err) => {
+            this._onError(err);
+            console.log('gen$.pipe(...........');
+            }});
 
+        const location$ = from(this._geolocation.getCurrentPosition(options)).pipe(
+            catchError((err) => throwError(err)),
+            tap((position: Position) => {
+                this._onSuccess(position);
+                console.log('location$', position)}),
+            take(1),
+            finalize(() => {
+                repeatedTimes > 0 ? gen$.next() : gen$.complete();
+                console.log('next() and final single');
+            })
+        );
+
+        location$.subscribe({error: (err) => {
+                this._onError(err);
+                console.log('location$.subscribe(...........');
+            }});
     }
 
 
@@ -146,7 +164,6 @@ export class ManualScanPage implements OnInit, OnDestroy {
 
         this.errorMessage = err.message;
         this.errorCode = err.code;
-        // this.timeSpent = null;
 
         setTimeout(() => {
             this.errorMessage = '';
@@ -169,21 +186,7 @@ export class ManualScanPage implements OnInit, OnDestroy {
         this.markerTransferService.setMarker(null);
     }
 
-    geoRequest() {
-        // return from(this._geolocation.getCurrentPosition(options)
-        //     .then(position => this._onSuccess(position))
-        //     .catch(err => this._onError(err))
-        //     .finally(() => {
-        //         console.log('Finalize  getCurrentPosition()', i, this.rangeSelectedValue);
-        //         if (this.rangeSelectedValue <= i+1) {
-        //             this.getPositionProcess = false;
-        //             this.timeSpent = this.timeBegin ? `${(Date.now() - this.timeBegin) / 100} ms` : '';
-        //             this.bestValueIndex = this._checkBestValue(this.points);
-        //             this.setMarker(this.points[this.bestValueIndex]);
-        //         }
-        //     });
-    }
-    // console.log('Your current position is:', position);
+
     // alert('Latitude: '          + position.coords.latitude          + '\n' +
     //     'Longitude: '         + position.coords.longitude         + '\n' +
     //     'Altitude: '          + position.coords.altitude          + '\n' +
