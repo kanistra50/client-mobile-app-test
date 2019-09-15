@@ -11,6 +11,8 @@ import {Geolocation} from '@ionic-native/geolocation/ngx'
 import {GoogleMapModule} from "./modules/google-map/google-map.module";
 // Services
 import {IdGeneratorService} from "./services/idGenerator.service";
+import {tokenProviderList} from "./services/tr-token-provider";
+import {AGeolocationCallsService} from "./services/a-geolocation-calls.service";
 
 @NgModule({
     declarations: [AppComponent],
@@ -26,8 +28,10 @@ import {IdGeneratorService} from "./services/idGenerator.service";
         Geolocation,
         GoogleMapModule,
         IdGeneratorService,
+        AGeolocationCallsService,
+        ...tokenProviderList,
+        {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
 
-        {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
     ],
     bootstrap: [AppComponent]
 })

@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Manual Scan</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <tr-item-wrap>
+
+    <div class="item-inner">
+      <span class="item-title">
+        <span>Scan</span><tr-blinker></tr-blinker>
+      </span>
+      <span class="radio" (click)="toggle()">
+        <span>GPS+CELL</span><span class="radio-button" [ngClass]="{check: hiAccuracy}"></span>
+      </span>
+    </div>
+
+    <tr-range-selector
+            (onChange)="onRangeSelected($event)"
+            [isDisabled]="signalPositionEvent"
+    ></tr-range-selector>
+
+
+    <tr-range-delay-selector
+            (onChange)="onRangeDelaySelected($event)"
+            [isDisabled]="signalPositionEvent"
+    ></tr-range-delay-selector>
+
+
+    <ion-button expand="block" [ngClass]="{disabled: signalPositionEvent}" (click)="onStart()">Start</ion-button>
+    <ion-button expand="block" [ngClass]="{disabled: signalPositionEvent}" (click)="onStop()">Stop</ion-button>
+    <ion-button expand="block" [ngClass]="{disabled: signalPositionEvent}" (click)="onKill()">Kill</ion-button>
+
+
+
+    <div>{{ result?.accuracy }}</div>
+
+    <div>{{ resultView }}</div>
+    <div>{{ stopResult }}</div>
+<!--    <div *ngIf="points.length">-->
+<!--      <span>Radius:</span>-->
+<!--      [<span-->
+<!--            class="radius-value"-->
+<!--            [ngClass]="{best: i === bestValueIndex}"-->
+<!--            *ngFor="let item of points; let i = index"-->
+<!--    >{{ item.accuracy }}</span>]-->
+<!--    </div>-->
+<!--    <span *ngIf="timeSpent">(scan time: {{ timeSpent }})</span>-->
+<!--    <div *ngIf="errorMessage || errorCode"><span class="info-error">Error: {{ errorCode }} {{ errorMessage }}</span></div>-->
+  </tr-item-wrap>
+
+<!--  <tr-item-wrap>-->
+<!--    <tr-google-map></tr-google-map>-->
+<!--  </tr-item-wrap>-->
+
+</ion-content>

@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', loadChildren: './pages/home/home.module#HomePageModule' },
+  { path: 'advanced-geolocation', loadChildren: './pages/advanced-geolocation/advanced-geolocation.module#AdvancedGeolocationModule' },
   { path: 'manual-scan', loadChildren: './pages/manual-scan/manual-scan.module#ManualScanModule' },
   { path: 'auto-scan', loadChildren: './pages/auto-scan/auto-scan.module#AutoScanModule' },
   //

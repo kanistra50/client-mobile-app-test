@@ -8,15 +8,21 @@ export class ItemService {
   items: Array<any> = [
     {
       'id': '1',
-      'title': 'Manual Scan',
-      'routerLink': '/manual-scan',
-      'description': ''
-    },{
-      'id': '2',
-      'title': 'Auto Scan',
-      'routerLink': '/auto-scan',
+      'title': 'Advanced Geolocation',
+      'routerLink': '/advanced-geolocation',
       'description': ''
     },
+    // {
+    //   'id': '2',
+    //   'title': 'Manual Scan',
+    //   'routerLink': '/manual-scan',
+    //   'description': ''
+    // },{
+    //   'id': '3',
+    //   'title': 'Auto Scan',
+    //   'routerLink': '/auto-scan',
+    //   'description': ''
+    // },
 
     //   'description': 'Scan current position'
     //   'description': 'Visualize navigation points'
