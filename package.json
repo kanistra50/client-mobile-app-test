@@ -80,7 +80,7 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-geolocation": {},
       "cordova-plugin-googlemaps": {
-        "API_KEY_FOR_ANDROID": "AIzaSyBW3odWQhJfM18udfhL1lms-DtmYm87J3w",
+        "API_KEY_FOR_ANDROID": "myApiKeyString",
         "PLAY_SERVICES_VERSION": "15.0.1",
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       }
